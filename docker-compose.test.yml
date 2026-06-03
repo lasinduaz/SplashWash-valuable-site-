@@ -1,0 +1,20 @@
+version: '3.9'
+
+# Used only during CI testing — overrides docker-compose.yml
+services:
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root
+      MYSQL_DATABASE: car_wash_test
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_pass
+    ports:
+      - "3307:3306"   # separate port to avoid conflict with dev DB
+
+  app:
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: car_wash_test
+      DB_USER: test_user
+      DB_PASS: test_pass
