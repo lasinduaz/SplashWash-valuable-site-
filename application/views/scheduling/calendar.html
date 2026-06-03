@@ -1,0 +1,89 @@
+<!-- /application/views/scheduling/calendar.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Scheduling - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Schedule</small></h1>
+      </div>
+      <!-- FIX 1: Added navigation (was missing entirely) -->
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../dashboard/admin.html">Dashboard</a>
+        <a href="../services/view.html">Services</a>
+      </nav>
+    </header>
+    <main class="card fade-in" style="margin-top:1.2rem">
+      <!-- FIX 2: Added viewport meta and proper CSS (was a bare unstyled stub) -->
+      <h3>Scheduling Calendar</h3>
+      <p class="small">Use the form below to schedule an appointment for a service request.</p>
+
+      <form id="scheduleForm" style="margin-top:1rem">
+        <div class="form-row">
+          <label for="requestId">Service Request ID</label>
+          <input type="number" id="requestId" name="request_id" required min="1">
+        </div>
+        <div class="form-row">
+          <label for="scheduledFor">Date & Time</label>
+          <input type="datetime-local" id="scheduledFor" name="scheduled_for" required>
+        </div>
+        <div class="form-row">
+          <label for="assignedTo">Assign Technician (ID)</label>
+          <input type="number" id="assignedTo" name="assigned_to" min="1" placeholder="Leave blank if unassigned">
+        </div>
+        <div class="form-row">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes"></textarea>
+        </div>
+        <button class="btn" type="submit">Schedule Appointment</button>
+        <p id="schedMsg" class="small" style="margin-top:.6rem;display:none"></p>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    // FIX 3: Calendar page now actually submits appointments via the PHP endpoint
+    //         (was a completely static placeholder with zero functionality)
+    document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('schedMsg');
+      const btn   = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
+      // Convert datetime-local value to MySQL-compatible format
+      const dtRaw = document.getElementById('scheduledFor').value; // "YYYY-MM-DDTHH:MM"
+      const scheduled_for = dtRaw ? dtRaw.replace('T', ' ') + ':00' : '';
+
+      const fd = new FormData();
+      fd.append('request_id',    document.getElementById('requestId').value);
+      fd.append('scheduled_for', scheduled_for);
+      fd.append('assigned_to',   document.getElementById('assignedTo').value);
+      fd.append('notes',         document.getElementById('notes').value);
+
+      try {
+        const res = await fetch('../../php/appointments/create_appointment.php', { method: 'POST', body: fd });
+        const txt = await res.text();
+        msgEl.textContent  = txt;
+        msgEl.style.color  = res.ok ? '#a7f3d0' : '#fca5a5';
+        msgEl.style.display = 'block';
+        if (res.ok) e.target.reset();
+      } catch {
+        msgEl.textContent  = 'Request failed. Please check your connection.';
+        msgEl.style.color  = '#fca5a5';
+        msgEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

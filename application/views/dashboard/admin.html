@@ -1,0 +1,202 @@
+<?php
+// /application/views/dashboard/admin.php
+// NOTE: Rename this file to admin.php on the server for PHP auth to work.
+
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/login.html');
+    exit;
+}
+
+if ($_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die('Access Denied: You do not have permission to view this page.');
+}
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Dashboard - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Admin</small></h1>
+      </div>
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../services/view.html">Services</a>
+        <a href="../services/create.html">New Request</a>
+      </nav>
+      <div class="header-cta">
+        <button class="btn" id="createServiceBtn">+ New Service</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h3>Service Requests</h3>
+        <div id="servicesContainer" class="services-list small">Loading...</div>
+      </section>
+
+      <aside class="card">
+        <h3>Actions</h3>
+        <p class="small">Create service requests, assign technicians, and manage appointments.</p>
+        <div style="margin-top:.8rem">
+          <button class="btn ghost" id="refreshBtn">Refresh</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Create Service Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modal">
+      <h3 id="modalTitle">Create Service</h3>
+      <form id="modalForm">
+        <div class="form-row"><label>Car Model<input id="mCarModel" name="car_model" required maxlength="255"></label></div>
+        <div class="form-row"><label>Description<textarea id="mDesc" name="service_description" required></textarea></label></div>
+        <div style="display:flex;gap:.5rem;justify-content:flex-end">
+          <button class="btn" id="modalSubmit" type="submit">Create</button>
+          <button class="btn ghost" id="modalClose" type="button">Cancel</button>
+        </div>
+        <p id="modalMsg" class="small" style="display:none"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // FIX 1: fetchServices now uses safe DOM construction instead of innerHTML
+    //         to prevent XSS from unsanitized server HTML being injected into page.
+    async function fetchServices() {
+      const container = document.getElementById('servicesContainer');
+      container.textContent = 'Loading...';
+      try {
+        const res = await fetch('../../php/services/view_services.php');
+
+        // FIX 2: Handle 401 (not logged in) and other error status codes explicitly
+        if (res.status === 401) {
+          container.textContent = 'Please log in to view services.';
+          return;
+        }
+        if (!res.ok) {
+          container.textContent = 'Failed to load services.';
+          return;
+        }
+
+        const html = await res.text();
+
+        // Parse server HTML safely
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        const items = tmp.querySelectorAll('.service');
+
+        if (!items.length) {
+          container.innerHTML = '<div class="small">No service requests found.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        items.forEach(it => {
+          // FIX 3: Use textContent (never innerHTML) when copying server-returned text
+          //         to prevent stored XSS from reaching the live DOM.
+          const titleEl  = it.querySelector('h4');
+          const pEls     = it.querySelectorAll('p');
+          const title    = titleEl  ? titleEl.textContent  : 'Unknown';
+          const meta     = pEls[0] ? pEls[0].textContent  : '';
+          const statusTx = pEls[1] ? pEls[1].textContent  : '';
+
+          const node = document.createElement('div');
+          node.className = 'service-item';
+
+          const left = document.createElement('div');
+          left.className = 'service-left';
+
+          const h4 = document.createElement('h4');
+          h4.textContent = title;
+
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'meta';
+          metaDiv.textContent = meta + (statusTx ? ' — ' + statusTx : '');
+
+          left.appendChild(h4);
+          left.appendChild(metaDiv);
+
+          const kv = document.createElement('div');
+          kv.className = 'kv';
+          const btn = document.createElement('button');
+          btn.className = 'btn ghost assignBtn';
+          btn.textContent = 'Assign';
+          kv.appendChild(btn);
+
+          node.appendChild(left);
+          node.appendChild(kv);
+          container.appendChild(node);
+        });
+      } catch (e) {
+        container.textContent = 'Failed to load services.';
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', fetchServices);
+
+    document.getElementById('createServiceBtn').addEventListener('click', () => {
+      document.getElementById('modalBackdrop').style.display = 'flex';
+    });
+
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('modalBackdrop').style.display = 'none';
+      document.getElementById('modalMsg').style.display = 'none';
+    });
+
+    document.getElementById('modalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const car_model           = document.getElementById('mCarModel').value.trim();
+      const service_description = document.getElementById('mDesc').value.trim();
+      const msgEl               = document.getElementById('modalMsg');
+      const submitBtn           = document.getElementById('modalSubmit');
+
+      if (!car_model || !service_description) {
+        msgEl.textContent    = 'Please fill in all fields.';
+        msgEl.style.display  = 'block';
+        msgEl.style.color    = '#fca5a5';
+        return;
+      }
+
+      submitBtn.disabled = true; // FIX 4: Prevent double-submit
+
+      const form = new FormData();
+      form.append('car_model', car_model);
+      form.append('service_description', service_description);
+
+      try {
+        const r   = await fetch('../../php/services/create_service.php', { method: 'POST', body: form });
+        const txt = await r.text();
+        msgEl.textContent   = txt;
+        msgEl.style.color   = r.ok ? '#a7f3d0' : '#fca5a5';
+        msgEl.style.display = 'block';
+        if (r.ok) {
+          document.getElementById('modalForm').reset();
+          fetchServices();
+        }
+      } catch (err) {
+        msgEl.textContent   = 'Failed to create.';
+        msgEl.style.color   = '#fca5a5';
+        msgEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Initial load
+    fetchServices();
+  </script>
+</body>
+</html>

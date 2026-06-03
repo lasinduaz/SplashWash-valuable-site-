@@ -1,0 +1,74 @@
+<!-- /application/views/dashboard/technician.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Technician Dashboard - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Technician</small></h1>
+      </div>
+      <!-- FIX 1: Added proper navigation (was missing entirely) -->
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../services/view.html">Services</a>
+      </nav>
+    </header>
+    <main class="card fade-in" style="margin-top:1.2rem">
+      <!-- FIX 2: Added viewport meta and proper styling (was a bare unstyled page) -->
+      <h3>Assigned Appointments</h3>
+      <p class="small">Assigned appointments will appear here.</p>
+      <div id="appointments" class="services-list small" style="margin-top:.8rem">
+        <div class="small">Loading your appointments...</div>
+      </div>
+    </main>
+  </div>
+  <script>
+    // FIX 3: Technician dashboard now actually loads their appointments
+    //         (was a static placeholder with no functionality)
+    async function loadAppointments() {
+      const el = document.getElementById('appointments');
+      try {
+        const res = await fetch('../../php/services/view_services.php');
+        if (res.status === 401) {
+          el.innerHTML = '<div class="small">Please <a href="../auth/login.html" style="color:var(--accent)">log in</a>.</div>';
+          return;
+        }
+        const html = await res.text();
+        const tmp  = document.createElement('div');
+        tmp.innerHTML = html;
+        const items = tmp.querySelectorAll('.service');
+        if (!items.length) { el.textContent = 'No assigned appointments.'; return; }
+        el.innerHTML = '';
+        items.forEach(it => {
+          const title = it.querySelector('h4') ? it.querySelector('h4').textContent : 'Unknown';
+          const status = it.querySelectorAll('p')[1] ? it.querySelectorAll('p')[1].textContent : '';
+          const node = document.createElement('div');
+          node.className = 'service-item';
+          const left = document.createElement('div');
+          left.className = 'service-left';
+          const h4 = document.createElement('h4');
+          h4.textContent = title;
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = status;
+          left.appendChild(h4);
+          left.appendChild(meta);
+          node.appendChild(left);
+          el.appendChild(node);
+        });
+      } catch {
+        el.textContent = 'Failed to load appointments.';
+      }
+    }
+    loadAppointments();
+  </script>
+</body>
+</html>

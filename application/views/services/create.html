@@ -1,0 +1,62 @@
+<!-- /application/views/services/create.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Create Service - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">New Request</small></h1>
+      </div>
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../auth/login.html">Login</a>
+        <a href="view.html">View Services</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="card fade-in">
+        <h3>Create Service Request</h3>
+
+        <!-- FIX 1: Removed inline onsubmit="createService(event)" — moved handler to JS -->
+        <!-- FIX 2: Added name attributes so FormData works correctly -->
+        <!-- FIX 3: Added required attributes for basic HTML5 validation -->
+        <form id="createServiceForm" novalidate>
+          <div class="form-row">
+            <label for="carModel">Car Model</label>
+            <input type="text" id="carModel" name="car_model" required maxlength="255" />
+          </div>
+          <div class="form-row">
+            <label for="serviceDesc">Description</label>
+            <textarea id="serviceDesc" name="service_description" required></textarea>
+          </div>
+          <button class="btn" type="submit">Create Request</button>
+          <!-- FIX 4: Added a message element (was referenced in services.js as #formMsg but didn't exist) -->
+          <p id="formMsg" class="small" style="margin-top:.6rem;display:none"></p>
+        </form>
+      </section>
+
+      <aside class="card fade-in">
+        <h3>Tips</h3>
+        <p class="small">Enter your car model and describe the service you need. Our team will review and schedule an appointment.</p>
+      </aside>
+    </main>
+
+    <div id="result" style="margin-top:1rem"></div>
+  </div>
+
+  <script src="../../static/scripts/services.js"></script>
+  <script>
+    // FIX 5: Attach the submit handler via addEventListener, not inline HTML attribute
+    document.getElementById('createServiceForm').addEventListener('submit', createService);
+  </script>
+</body>
+</html>

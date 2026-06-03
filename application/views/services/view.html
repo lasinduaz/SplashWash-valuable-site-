@@ -1,0 +1,95 @@
+<!-- /application/views/services/view.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>View Services - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Services</small></h1>
+      </div>
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../auth/login.html">Login</a>
+        <!-- FIX 1: Added link to create service (was missing from this page) -->
+        <a href="create.html">New Request</a>
+      </nav>
+    </header>
+
+    <main class="card container">
+      <h3>Service Requests</h3>
+      <div id="services" class="services-list small">Loading...</div>
+    </main>
+  </div>
+
+  <script>
+    async function loadPublicServices() {
+      const el = document.getElementById('services');
+      el.textContent = 'Loading...';
+      try {
+        const res = await fetch('../../php/services/view_services.php');
+
+        // FIX 2: Explicitly handle 401 (unauthenticated) from the now-secured endpoint
+        if (res.status === 401) {
+          el.innerHTML = '<div class="small">Please <a href="../auth/login.html" style="color:var(--accent)">log in</a> to view service requests.</div>';
+          return;
+        }
+        if (!res.ok) {
+          el.textContent = 'Failed to load services.';
+          return;
+        }
+
+        const html = await res.text();
+        const tmp  = document.createElement('div');
+        tmp.innerHTML = html;
+        const items = tmp.querySelectorAll('.service');
+
+        if (items.length === 0) {
+          el.innerHTML = '<div class="small">No services yet.</div>';
+          return;
+        }
+
+        el.innerHTML = '';
+        items.forEach(it => {
+          // FIX 3: Use textContent (not innerHTML) to prevent stored XSS
+          //         Original code: node.innerHTML = `<div ...>${title}</div>` where title
+          //         came from server HTML — a malicious car model name would execute.
+          const titleEl = it.querySelector('h4');
+          const pEl     = it.querySelector('p');
+          const title   = titleEl ? titleEl.textContent : 'Untitled';
+          const meta    = pEl    ? pEl.textContent    : '';
+
+          const node = document.createElement('div');
+          node.className = 'service-item';
+
+          const left = document.createElement('div');
+          left.className = 'service-left';
+
+          const h4 = document.createElement('h4');
+          h4.textContent = title;
+
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'meta';
+          metaDiv.textContent = meta;
+
+          left.appendChild(h4);
+          left.appendChild(metaDiv);
+          node.appendChild(left);
+          el.appendChild(node);
+        });
+      } catch (e) {
+        el.textContent = 'Failed to load services.';
+      }
+    }
+
+    loadPublicServices();
+  </script>
+</body>
+</html>

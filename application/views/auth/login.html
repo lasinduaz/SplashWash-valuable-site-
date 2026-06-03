@@ -1,0 +1,62 @@
+<!-- /application/views/auth/login.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Demo</small></h1>
+      </div>
+      <div class="header-cta">
+        <nav class="nav">
+          <a href="../../../index.html">Home</a>
+          <a href="../services/view.html">Services</a>
+          <a href="../dashboard/admin.html">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card fade-in">
+        <h3>Sign in</h3>
+        <p class="small">Welcome back — use your credentials to access the demo dashboard.</p>
+
+        <!-- FIX: autocomplete="off" removed — browsers should be allowed to autofill legitimate forms -->
+        <form id="loginForm" novalidate>
+          <div class="form-row">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required autocomplete="username" />
+          </div>
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required autocomplete="current-password" />
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <button class="btn" id="loginBtn" type="submit">Sign in</button>
+            <a class="btn ghost" href="register.html">Create account</a>
+          </div>
+          <p id="msg" class="small" style="margin-top:.6rem;color:#fca5a5;display:none"></p>
+        </form>
+      </section>
+
+      <aside class="card fade-in">
+        <h3>Quick Tips</h3>
+        <p class="small">Use seeded accounts: <strong>admin / admin123</strong>, <strong>tech1 / tech123</strong>.</p>
+        <p class="small">This demo is intentionally educational — use in an isolated lab only.</p>
+      </aside>
+    </main>
+  </div>
+
+  <!-- FIX: Removed unused #loginModal markup — it was referenced nowhere and caused confusion -->
+
+  <script src="../../static/scripts/auth.js"></script>
+</body>
+</html>

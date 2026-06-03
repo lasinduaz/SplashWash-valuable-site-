@@ -1,0 +1,62 @@
+<!-- /application/views/auth/register.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Register - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">CW</div>
+        <h1>CarWash <small class="small">Demo</small></h1>
+      </div>
+      <nav class="nav">
+        <a href="../../../index.html">Home</a>
+        <a href="../services/view.html">Services</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="card fade-in">
+        <h3>Create an account</h3>
+        <p class="small">Choose username and password. This demo stores plaintext passwords (intentionally).</p>
+
+        <form id="registerForm" novalidate>
+          <div class="form-row">
+            <label for="rusername">Username</label>
+            <input id="rusername" name="username" type="text" required />
+          </div>
+          <div class="form-row">
+            <label for="rpassword">Password</label>
+            <input id="rpassword" name="password" type="password" required minlength="6" />
+          </div>
+          <div class="form-row">
+            <label for="role">Role</label>
+            <select id="role" name="role">
+              <option value="customer">Customer</option>
+              <option value="technician">Technician</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn" id="registerBtn" type="submit">Register</button>
+            <a class="btn ghost" href="login.html">Back to login</a>
+          </div>
+          <p id="rmsg" class="small" style="margin-top:.6rem;color:#a7f3d0;display:none"></p>
+        </form>
+      </section>
+
+      <aside class="card fade-in">
+        <h3>Why plaintext?</h3>
+        <p class="small">This repository intentionally demonstrates insecure practices. Never store plaintext passwords in real apps.</p>
+      </aside>
+    </main>
+  </div>
+
+  <script src="../../static/scripts/auth.js"></script>
+</body>
+</html>
