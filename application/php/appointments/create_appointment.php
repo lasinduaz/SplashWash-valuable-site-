@@ -4,14 +4,14 @@
 session_start();
 require_once __DIR__ . '/../config/db_connection.php';
 
-// FIX 1: Proper HTTP status on auth failure
+// FIX 1 Proper HTTP status on auth failure
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     http_response_code(403);
     echo "Not authorized.";
     exit;
 }
 
-// FIX 2: Type-safe extraction and validation (was raw $_POST with no checks)
+// FIX 2 Type-safe extraction and validation (was raw $_POST with no checks)
 $request_id    = filter_input(INPUT_POST, 'request_id',    FILTER_VALIDATE_INT);
 $assigned_to   = filter_input(INPUT_POST, 'assigned_to',   FILTER_VALIDATE_INT);
 $scheduled_for = trim($_POST['scheduled_for'] ?? '');
@@ -34,8 +34,9 @@ if (!$dt) {
 }
 $scheduled_for = $dt->format('Y-m-d H:i:s'); // normalize
 
-// FIX 5: Use prepared statement to prevent SQL Injection
-//         Original: "INSERT INTO appointments ... VALUES ($request_id, '$scheduled_for', $assigned_to, '$notes')"
+// FIX 5 Use prepared statement to prevent SQL Injection
+//         Original: "INSERT INTO appointments ...
+//  VALUES ($request_id, '$scheduled_for', $assigned_to, '$notes')"
 //         — unquoted integers allowed direct injection
 try {
     $stmt = $pdo->prepare(

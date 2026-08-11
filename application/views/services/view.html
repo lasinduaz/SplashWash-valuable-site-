@@ -36,7 +36,7 @@
       try {
         const res = await fetch('../../php/services/view_services.php');
 
-        // FIX 2: Explicitly handle 401 (unauthenticated) from the now-secured endpoint
+        // FIX 2  Explicitly handle 401 (unauthenticated) from the now-secured endpoint
         if (res.status === 401) {
           el.innerHTML = '<div class="small">Please <a href="../auth/login.html" style="color:var(--accent)">log in</a> to view service requests.</div>';
           return;
