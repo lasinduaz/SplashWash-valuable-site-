@@ -16,7 +16,7 @@ $pass = getenv('DB_PASS') ?: $pass;
 $charset = getenv('DB_CHARSET') ?: $charset;
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-// PDO options: enable exceptions, use native prepared statements,
+// PDO options enable exceptions, use native prepared statements,
 // and set sensible defaults for fetch mode and charset init.
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
