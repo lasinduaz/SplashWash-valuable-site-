@@ -3,6 +3,7 @@
 
 session_start();
 require_once __DIR__ . '/../config/db_connection.php';
+require_once __DIR__ . '/../config/input_security.php';
 
 // FIX 1: Return proper HTTP status on auth failure instead of just echoing
 if (!isset($_SESSION['user_id'])) {
@@ -14,6 +15,8 @@ if (!isset($_SESSION['user_id'])) {
 $user_id    = (int) $_SESSION['user_id']; // FIX 2: Cast to int — never trust session data untyped
 $car_model  = trim($_POST['car_model'] ?? '');
 $description = trim($_POST['service_description'] ?? '');
+
+block_sql_injection([$car_model, $description], 'create_service');
 
 // FIX 3: Server-side input validation (was completely absent)
 if ($car_model === '' || $description === '') {

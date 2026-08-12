@@ -12,6 +12,15 @@ async function postForm(url, formEl) {
   return { text, ok: res.ok, status: res.status };
 }
 
+function showFieldMessage(msgEl, text, isSuccess) {
+  msgEl.style.display = 'block';
+  msgEl.style.color   = isSuccess ? '#a7f3d0' : '#fca5a5';
+  msgEl.textContent   = text;
+  if (!isSuccess && /suspicious input detected/i.test(text)) {
+    alert('Suspicious input detected. Please remove any injection-style characters and try again.');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Login form ──────────────────────────────────────────────────────────────
@@ -26,9 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const msg   = document.getElementById('msg');
 
       if (!uname || !pass) {
-        msg.style.display = 'block';
-        msg.style.color   = '#fca5a5';
-        msg.textContent   = 'Please enter username and password.';
+        showFieldMessage(msg, 'Please enter username and password.', false);
         return;
       }
 
@@ -36,9 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         const { text, ok } = await postForm('../../php/auth/login.php', loginForm);
-        msg.style.display = 'block';
-        msg.style.color   = ok ? '#a7f3d0' : '#fca5a5';
-        msg.textContent   = text;
+        showFieldMessage(msg, text, ok);
 
         // FIX 4: On success, redirect to the appropriate dashboard instead of staying
         //         on the login page (previously the comment said "keep manual for demo"
@@ -73,16 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // FIX 5: Validate username length (was only checking password length)
       if (uname.length < 3) {
-        msg.style.display = 'block';
-        msg.style.color   = '#fca5a5';
-        msg.textContent   = 'Username must be at least 3 characters.';
+        showFieldMessage(msg, 'Username must be at least 3 characters.', false);
         return;
       }
 
       if (pass.length < 6) {
-        msg.style.display = 'block';
-        msg.style.color   = '#fca5a5';
-        msg.textContent   = 'Password must be at least 6 characters.';
+        showFieldMessage(msg, 'Password must be at least 6 characters.', false);
         return;
       }
 
@@ -90,10 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         const { text, ok, status } = await postForm('../../php/auth/register.php', regForm);
-        msg.style.display = 'block';
-        msg.style.color   = ok ? '#a7f3d0' : '#fca5a5';
         // FIX 6: Show conflict error distinctly (username taken = 409)
-        msg.textContent = status === 409 ? 'Username already taken. Please choose another.' : text;
+        showFieldMessage(
+          msg,
+          status === 409 ? 'Username already taken. Please choose another.' : text,
+          ok
+        );
 
         if (ok) {
           setTimeout(() => {
@@ -101,9 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 1200);
         }
       } catch (err) {
-        msg.style.display = 'block';
-        msg.style.color   = '#fca5a5';
-        msg.textContent   = 'Registration failed. Please check your connection.';
+        showFieldMessage(msg, 'Registration failed. Please check your connection.', false);
       } finally {
         regBtn.disabled = false;
       }

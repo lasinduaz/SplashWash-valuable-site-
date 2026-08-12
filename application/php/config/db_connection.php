@@ -3,6 +3,7 @@
 // Simple PDO DB connection. Edit credentials for your local setup.
 
 $host = 'localhost';
+$port = 3306;
 $db   = 'car_wash_db';
 $user = 'root'; // default for XAMPP / local setups
 $pass = ''; // set your root or test password
@@ -10,12 +11,13 @@ $charset = 'utf8mb4';
 
 // Allow overriding from environment variables when running in containers.
 $host = getenv('DB_HOST') ?: $host;
+$port = getenv('DB_PORT') ?: $port;
 $db = getenv('DB_NAME') ?: $db;
 $user = getenv('DB_USER') ?: $user;
 $pass = getenv('DB_PASS') ?: $pass;
 $charset = getenv('DB_CHARSET') ?: $charset;
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 // PDO options enable exceptions, use native prepared statements,
 // and set sensible defaults for fetch mode and charset init.
 $options = [

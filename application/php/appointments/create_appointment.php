@@ -3,6 +3,7 @@
 
 session_start();
 require_once __DIR__ . '/../config/db_connection.php';
+require_once __DIR__ . '/../config/input_security.php';
 
 // FIX 1 Proper HTTP status on auth failure
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -17,14 +18,16 @@ $assigned_to   = filter_input(INPUT_POST, 'assigned_to',   FILTER_VALIDATE_INT);
 $scheduled_for = trim($_POST['scheduled_for'] ?? '');
 $notes         = trim($_POST['notes'] ?? '');
 
-// FIX 3: Server-side validation — all required fields must be present and valid
+block_sql_injection([$scheduled_for, $notes], 'create_appointment');
+
+// FIX 3 Server-side validation — all required fields must be present and valid
 if (!$request_id || !$scheduled_for) {
     http_response_code(400);
     echo "Request ID and scheduled date/time are required.";
     exit;
 }
 
-// FIX 4: Validate datetime format to prevent garbage data
+// FIX 4 Validate datetime format to prevent garbage data
 $dt = \DateTime::createFromFormat('Y-m-d H:i:s', $scheduled_for)
     ?: \DateTime::createFromFormat('Y-m-d\TH:i', $scheduled_for);
 if (!$dt) {

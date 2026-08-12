@@ -8,10 +8,13 @@ session_start();
 //         (it was above require_once and never set, causing a logical dead-code error)
 
 require_once __DIR__ . '/../config/db_connection.php';
+require_once __DIR__ . '/../config/input_security.php';
 
 // FIX 3 Use null-coalescing operator (cleaner, PHP 7+)
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
+
+block_sql_injection([$username, $password], 'login');
 
 // FIX 4: Basic input presence check
 if ($username === '' || $password === '') {
@@ -20,7 +23,7 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-// FIX 5 Use a prepared statement to prevent SQL Injection
+
 //         Original: "SELECT * FROM users WHERE username = '$username' AND password = '$password'"
 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->execute([$username]);

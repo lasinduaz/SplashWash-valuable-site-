@@ -3,10 +3,13 @@
 
 session_start();
 require_once __DIR__ . '/../config/db_connection.php';
+require_once __DIR__ . '/../config/input_security.php';
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 $role     = $_POST['role'] ?? 'customer';
+
+block_sql_injection([$username, $password, $role], 'register');
 
 // FIX 1 Input validation - username and password must not be empty
 if ($username === '' || $password === '') {
