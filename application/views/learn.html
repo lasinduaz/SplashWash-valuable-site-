@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Learn - Car Wash Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="../static/styles/main.css">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" type="image/x-icon">
+</head>
+<body class="learn-page">
+  <div class="container">
+    <header class="header fade-in">
+      <div class="brand">
+        <div class="logo pulse">CW</div>
+        <h1>CarWash <small class="small">Learn</small></h1>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="../../index.html">Home</a>
+        <a href="auth/login.html">Login</a>
+        <a href="auth/register.html">Register</a>
+        <a href="services/view.html">Public Services</a>
+        <a href="learn.html">Learn</a>
+      </nav>
+    </header>
+
+    <main class="row g-4 align-items-start">
+      <section class="col-12 col-lg-8">
+        <div class="card fade-in stagger-1">
+          <h3 class="mt-2 learn-title">Web security basics</h3>
+          <p class="small">
+            This page explains the risks around SQL injection and cross-site scripting in a safe, defensive way.
+            It intentionally does not include exploit payloads.
+          </p>
+
+          <div class="stack">
+            <div class="card">
+              <h4 class="topic-title learn-title">
+                <span class="topic-chip topic-chip-red">SQL</span>
+                <span class="topic-chip topic-chip-amber">Injection</span>
+              </h4>
+              <p class="small mb-2">Happens when untrusted input is concatenated into SQL statements.</p>
+              <p class="small mb-0">Defenses: prepared statements, parameter binding, least-privilege database users, and server-side validation.</p>
+            </div>
+
+            <div class="card">
+              <h4 class="learn-title">Cross-site scripting</h4>
+              <p class="small mb-2">Happens when untrusted data is rendered into HTML or JavaScript without escaping.</p>
+              <p class="small mb-0">Defenses: output encoding, safe DOM APIs like textContent, input sanitization, and a strict Content Security Policy.</p>
+            </div>
+
+            <div class="card">
+              <h4 class="learn-title">Good testing habits</h4>
+              <p class="small mb-0">Use local labs, test accounts, and tools like OWASP ZAP only in isolated environments you control.</p>
+            </div>
+
+            <div class="card">
+              <h4 class="learn-title">Practice resources</h4>
+              <p class="small mb-2">Use these to learn in safe, legal lab environments:</p>
+              <ul class="small mb-0 ps-3">
+                <li><a href="https://tryhackme.com/" target="_blank" rel="noopener noreferrer">TryHackMe</a></li>
+                <li><a href="https://portswigger.net/web-security/all-labs" target="_blank" rel="noopener noreferrer">PortSwigger Web Security Academy labs</a></li>
+                <li><a href="https://github.com/verylazytech/OSCP-Resources" target="_blank" rel="noopener noreferrer">OSCP Resources</a></li>
+                <li><a href="https://overthewire.org/wargames/" target="_blank" rel="noopener noreferrer">OverTheWire Wargames</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="col-12 col-lg-4">
+        <div class="stack">
+          <div class="card fade-in stagger-2">
+            <h3 class="learn-title">Safe examples</h3>
+            <p class="small mb-2">Instead of attack strings, focus on secure patterns like:</p>
+            <ul class="small mb-0 ps-3">
+              <li><code>PDO::prepare()</code> with bound parameters</li>
+              <li><code>textContent</code> instead of <code>innerHTML</code></li>
+              <li>Escaping output before rendering user data</li>
+            </ul>
+          </div>
+
+          <div class="card fade-in stagger-3">
+            <h3 class="learn-title">Next step</h3>
+            <p class="small mb-0">If you want, I can turn these into clickable topic cards for SQL injection, XSS, auth, and access control.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
